@@ -18,7 +18,7 @@
 library(tensorflow)
 library(ggplot2)
 
-fileName = 'c:/Home/tfR/data/in/sp500-n1000.csv'
+fileName = 'sp500-n1000.csv'
 data = read.csv(fileName, header = F)[1:1000, 1]
 #tsData = rbind(
 #     data.frame(seq = 1:length(data), data = data, cls = 'sp500'))
@@ -95,7 +95,7 @@ x = tf$placeholder(dtype = tf$float32, shape = list(NULL, seqLength, inputDim), 
 y = tf$placeholder(dtype = tf$float32, shape = list(NULL, seqLength), name='label')
 # RNN 프로세스 방식 : Basic LSTM recurrent network cell 
 # cell = tf$contrib$rnn$BasicLSTMCell(hiddenDim)
-cell = tf$contrib$rnn$BasicLSTMCell(
+cell = tf$contrib$rnn$LSTMCell(
      num_units = hiddenDim
     , forget_bias = 1.0 # bias of forget gete to reduce the scale of forgetting in the beginning of the training
     , activation = tf$nn$tanh # 활성화 함수 : hyper tangent  [, relu, ...]
@@ -156,11 +156,11 @@ with(tf$Session() %as% sess, {
         step = step + 1
     }
     # 모델 binary file 저장 path
-    save_path = saver$save(sess, 'c:/Home/tfR/model/model.ckpt')
+    save_path = saver$save(sess, './model.ckpt')
     print(sprintf('Model saved to %s', save_path))
 
     tf$get_variable_scope()$reuse_variables()
-    saver$restore(sess, 'c:/Home/tfR/model/model.ckpt')
+    saver$restore(sess, './model.ckpt')
     predicted_vals = sess$run(modelOut, feed_dict = dict(x = test_x))
     print(sprintf('predicted_vals, %s', dim(predicted_vals)))
 
@@ -177,7 +177,7 @@ with(tf$Session() %as% sess, {
     predicted_vals = c()
     for (i in 1:20) {
         tf$get_variable_scope()$reuse_variables()
-        saver$restore(sess, 'c:/Home/tfR/model/model.ckpt')
+        saver$restore(sess, './model.ckpt')
         next_seq = sess$run(modelOut, feed_dict = dict(x = array(prev_seq, dim = c(1, 5, 1))))
         predicted_vals = c(predicted_vals, next_seq[5])
         prev_seq = c(prev_seq[2:5], next_seq[5])
