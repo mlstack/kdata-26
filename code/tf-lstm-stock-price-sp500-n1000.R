@@ -17,7 +17,7 @@
 
 library(tensorflow)
 library(ggplot2)
-options(tensorflow.one_based_extract = FALSE)
+options(tensorflow.extract.one_based = FALSE)
 fileName = 'sp500-n1000.csv'
 data = read.csv(fileName, header = F)[1:1000, 1]
 #tsData = rbind(
